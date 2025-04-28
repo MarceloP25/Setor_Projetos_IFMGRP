@@ -338,48 +338,50 @@ const ProjectRegistration: React.FC = () => {
                   placeholder="Financiamento"
                 />
               </div>
-              <div className="form-col">
-                <label className="form-label">Tipos de bolsas solicitadas</label>
-                <div className="checkbox-group">
-                  {[
-                    { id: 'supi', value: 'SUP I (20h) - R$ 700,00', label: 'SUP I (20h) - R$ 700,00' },
-                    { id: 'supii', value: 'SUP II (10h) - R$ 350,00', label: 'SUP II (10h) - R$ 350,00' },
-                    { id: 'bexmed10', value: 'BEXMED (10h) - R$ 350,00', label: 'BEXMED (10h) - R$ 350,00' },
-                    { id: 'bexcol', value: 'BEXCOL (até 15h) - R$ 900,00', label: 'BEXCOL (até 15h) - R$ 900,00' }
-                  ].map((bolsa) => {
-                    const selectedBolsa = formData.bolsas.find(b => b.tipo === bolsa.value);
-                    return (
-                      <div key={bolsa.id} className="checkbox-option">
-                        <div className="flex items-center justify-between py-2">
-                          <label htmlFor={`tipo-${bolsa.id}`} className="w-[300px]">
-                            {bolsa.label}
-                          </label>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              id={`tipo-${bolsa.id}`}
-                              checked={!!selectedBolsa}
-                              onChange={() => toggleBolsaTipo(bolsa.value)}
-                              className="w-5 h-5"
-                            />
-                            {selectedBolsa && (
-                              <input
-                                type="number"
-                                id={`quantidade-${bolsa.id}`}
-                                value={selectedBolsa.quantidade}
-                                onChange={(e) => handleBolsaChange(bolsa.value, e.target.value)}
-                                min="0"
-                                max="10"
-                                className="w-[80px] px-2 py-1 border rounded"
-                              />
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+              <div className="form-row">
+  <div className="form-col">
+    <label className="form-label">Tipos de bolsas solicitadas</label>
+    <div className="checkbox-group">
+      {[
+        { id: 'supi', value: 'SUP I (20h) - R$ 700,00', label: 'SUP I (20h) - R$ 700,00' },
+        { id: 'supii', value: 'SUP II (10h) - R$ 350,00', label: 'SUP II (10h) - R$ 350,00' },
+        { id: 'bexmed10', value: 'BEXMED (10h) - R$ 350,00', label: 'BEXMED (10h) - R$ 350,00' },
+        { id: 'bexcol', value: 'BEXCOL (até 15h) - R$ 900,00', label: 'BEXCOL (até 15h) - R$ 900,00' }
+      ].map((bolsa) => {
+        const selectedBolsa = formData.bolsas.find(b => b.tipo === bolsa.value);
+        return (
+          <div key={bolsa.id} className="checkbox-option">
+            <div className="flex items-center justify-between py-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id={`tipo-${bolsa.id}`}
+                  checked={!!selectedBolsa}
+                  onChange={() => toggleBolsaTipo(bolsa.value)}
+                  className="w-5 h-5"
+                />
+                <label htmlFor={`tipo-${bolsa.id}`} className="font-normal">
+                  {bolsa.label}
+                </label>
               </div>
+              {selectedBolsa && (
+                <input
+                  type="number"
+                  id={`quantidade-${bolsa.id}`}
+                  value={selectedBolsa.quantidade}
+                  onChange={(e) => handleBolsaChange(bolsa.value, e.target.value)}
+                  min="0"
+                  max="10"
+                  className="w-[80px] px-2 py-1 border rounded"
+                />
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</div>
             </div>
             <div className="form-section">
               <div className="form-section-title">Área Temática</div>
