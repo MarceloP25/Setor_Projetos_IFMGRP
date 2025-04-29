@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase/firebaseUtil';
-import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
 import './styles.css';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
 
 interface FormData {
+  [key: string]: string | number | Bolsa[] | null;
   edital: string;
   nomeProjeto: string;
   ano: string;
@@ -32,6 +37,7 @@ interface FormData {
   avaliador1: string;
   avaliador2: string;
   avaliador3: string;
+  editaisList?: Array<{id: string; nome: string}> | null;
 }
 
 interface Bolsa {
@@ -51,8 +57,8 @@ const formatMoney = (value: string): string => {
 const sanitizeName = (name: string): string => {
   return name
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')
-    .replace(/\s+/g, '-');
+    .replace(/[^a-z0-9\\s]/g, '')
+    .replace(/\\s+/g, '-');
 };
 
 const ProjectRegistration: React.FC = () => {
@@ -84,7 +90,8 @@ const ProjectRegistration: React.FC = () => {
     classificado: '',
     avaliador1: '',
     avaliador2: '',
-    avaliador3: ''
+    avaliador3: '',
+    editaisList: null
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -99,12 +106,10 @@ const ProjectRegistration: React.FC = () => {
 
   const handleBolsaChange = (tipo: string, quantidade: string) => {
     setFormData(prev => {
-      const bolsasAtualizadas = prev.bolsas.map(bolsa => 
+      const bolsasAtualizadas = prev.bolsas.map(bolsa =>
         bolsa.tipo === tipo ? { ...bolsa, quantidade: parseInt(quantidade) || 0 } : bolsa
       );
-      
       const bolsasFiltradas = bolsasAtualizadas.filter(bolsa => bolsa.quantidade > 0);
-      
       return {
         ...prev,
         bolsas: bolsasFiltradas
@@ -191,31 +196,45 @@ const ProjectRegistration: React.FC = () => {
           classificado: '',
           avaliador1: '',
           avaliador2: '',
-          avaliador3: ''
+          avaliador3: '',
+          editaisList: formData.editaisList
         });
       } catch (error) {
-        if (error.code === 'already-exists') {
+        if ((error as firebase.FirebaseError).code === 'already-exists') {
           alert('Já existe um projeto com este nome!');
         } else {
-          alert('Erro ao cadastrar projeto: ' + error.message);
+          alert('Erro ao cadastrar projeto: ' + (error as Error).message);
         }
       }
     }
   };
 
+  const fetchEditais = async () => {
+    try {
+      const editaisRef = collection(db, "editais");
+      const querySnapshot = await getDocs(editaisRef);
+      const editais = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        nome: doc.data().nome
+      }));
+      setFormData(prev => ({
+        ...prev,
+        editaisList: editais
+      }));
+    } catch (error) {
+      console.error("Erro ao buscar editais:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEditais();
+  }, []);
+
   return (
     <div className="container">
-      <div className="sidebar">
-        <h2>Visão Geral</h2>
-        <ul className="sidebar-menu">
-          <li className="active">Projetos</li>
-          <li>Orçamentos</li>
-        </ul>
-      </div>
+      <Sidebar />
       <div className="main-content">
-        <div className="header">
-          <h1>Setor de Projetos IFSMG - RP</h1>
-        </div>
+        <Header />
         <div className="form-container">
           <div className="form-title">Cadastro de Projeto</div>
           <form onSubmit={handleSubmit}>
@@ -228,8 +247,9 @@ const ProjectRegistration: React.FC = () => {
                 onChange={handleChange}
               >
                 <option value="">Selecione o Edital</option>
-                <option value="Edital 01/2025">Edital 01/2025</option>
-                <option value="Edital 02/2025">Edital 02/2025</option>
+                {formData.editaisList?.map(edital => (
+                  <option key={edital.id} value={edital.nome}>{edital.nome}</option>
+                ))}
               </select>
             </div>
             <div className="form-group">
@@ -338,50 +358,50 @@ const ProjectRegistration: React.FC = () => {
                   placeholder="Financiamento"
                 />
               </div>
-              <div className="form-row">
-  <div className="form-col">
-    <label className="form-label">Tipos de bolsas solicitadas</label>
-    <div className="checkbox-group">
-      {[
-        { id: 'supi', value: 'SUP I (20h) - R$ 700,00', label: 'SUP I (20h) - R$ 700,00' },
-        { id: 'supii', value: 'SUP II (10h) - R$ 350,00', label: 'SUP II (10h) - R$ 350,00' },
-        { id: 'bexmed10', value: 'BEXMED (10h) - R$ 350,00', label: 'BEXMED (10h) - R$ 350,00' },
-        { id: 'bexcol', value: 'BEXCOL (até 15h) - R$ 900,00', label: 'BEXCOL (até 15h) - R$ 900,00' }
-      ].map((bolsa) => {
-        const selectedBolsa = formData.bolsas.find(b => b.tipo === bolsa.value);
-        return (
-          <div key={bolsa.id} className="checkbox-option">
-            <div className="flex items-center justify-between py-2">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id={`tipo-${bolsa.id}`}
-                  checked={!!selectedBolsa}
-                  onChange={() => toggleBolsaTipo(bolsa.value)}
-                  className="w-5 h-5"
-                />
-                <label htmlFor={`tipo-${bolsa.id}`} className="font-normal">
-                  {bolsa.label}
-                </label>
-              </div>
-              {selectedBolsa && (
-                <input
-                  type="number"
-                  id={`quantidade-${bolsa.id}`}
-                  value={selectedBolsa.quantidade}
-                  onChange={(e) => handleBolsaChange(bolsa.value, e.target.value)}
-                  min="0"
-                  max="10"
-                  className="w-[80px] px-2 py-1 border rounded"
-                />
-              )}
             </div>
-          </div>
-        );
-      })}
-    </div>
-  </div>
-</div>
+            <div className="form-row">
+              <div className="form-col">
+                <label className="form-label">Tipos de bolsas solicitadas</label>
+                <div className="checkbox-group">
+                  {[
+                    { id: 'supi', value: 'SUP I (20h) - R$ 700,00', label: 'SUP I (20h) - R$ 700,00' },
+                    { id: 'supii', value: 'SUP II (10h) - R$ 350,00', label: 'SUP II (10h) - R$ 350,00' },
+                    { id: 'bexmed10', value: 'BEXMED (10h) - R$ 350,00', label: 'BEXMED (10h) - R$ 350,00' },
+                    { id: 'bexcol', value: 'BEXCOL (até 15h) - R$ 900,00', label: 'BEXCOL (até 15h) - R$ 900,00' }
+                  ].map((bolsa) => {
+                    const selectedBolsa = formData.bolsas.find(b => b.tipo === bolsa.value);
+                    return (
+                      <div key={bolsa.id} className="checkbox-option">
+                        <div className="flex items-center justify-between py-2">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id={`tipo-${bolsa.id}`}
+                              checked={!!selectedBolsa}
+                              onChange={() => toggleBolsaTipo(bolsa.value)}
+                              className="w-5 h-5"
+                            />
+                            <label htmlFor={`tipo-${bolsa.id}`} className="font-normal">
+                              {bolsa.label}
+                            </label>
+                          </div>
+                          {selectedBolsa && (
+                            <input
+                              type="number"
+                              id={`quantidade-${bolsa.id}`}
+                              value={selectedBolsa.quantidade}
+                              onChange={(e) => handleBolsaChange(bolsa.value, e.target.value)}
+                              min="0"
+                              max="10"
+                              className="w-[80px] px-2 py-1 border rounded"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
             <div className="form-section">
               <div className="form-section-title">Área Temática</div>
