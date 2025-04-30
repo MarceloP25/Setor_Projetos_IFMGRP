@@ -232,7 +232,7 @@ const ProjectRegistration: React.FC = () => {
 
   return (
     <div className="container">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <div className="main-content">
         <Header />
         <div className="form-container">

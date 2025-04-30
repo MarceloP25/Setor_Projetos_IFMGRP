@@ -9,6 +9,7 @@ const AppRoutes = () => {
   return (
     <BrowserRouter>
       <div className="app-container">
+        <Sidebar />
         <div className="main-content">
           <Routes>
             {/* <Route path="/visao_geral" element={<VisaoGeral />} /> */}
@@ -23,3 +24,4 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
+

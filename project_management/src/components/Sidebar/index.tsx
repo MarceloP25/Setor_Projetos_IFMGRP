@@ -1,8 +1,8 @@
-import { Link, useLocation } from 'react-router-dom'; // Adicione useLocation
+import { Link, useLocation } from 'react-router-dom';
 import './styles.css';
 
 const Sidebar = () => {
-  const location = useLocation(); // Obtém a rota atual
+  const location = useLocation();
   const menuItems = [
     { id: 'visao_geral', label: 'Visão Geral' },
     { id: 'projetos', label: 'Projetos' },
@@ -17,7 +17,7 @@ const Sidebar = () => {
         {menuItems.map(item => (
           <li
             key={item.id}
-            className={location.pathname.includes(item.id) ? 'active' : ''} // Verifica se a rota atual inclui o ID
+            className={location.pathname.includes(item.id) ? 'active' : ''}
           >
             <Link to={`/${item.id}`}>{item.label}</Link>
           </li>
