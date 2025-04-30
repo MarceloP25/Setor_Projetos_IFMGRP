@@ -1,10 +1,8 @@
-import React from 'react';
+import { Link, useLocation } from 'react-router-dom'; // Adicione useLocation
+import './styles.css';
 
-interface SidebarProps {
-  activeSection?: string;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ activeSection = 'projetos' }) => {
+const Sidebar = () => {
+  const location = useLocation(); // Obtém a rota atual
   const menuItems = [
     { id: 'visao_geral', label: 'Visão Geral' },
     { id: 'projetos', label: 'Projetos' },
@@ -17,11 +15,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection = 'projetos' }) => {
       <h2>Visão Geral</h2>
       <ul className="sidebar-menu">
         {menuItems.map(item => (
-          <li 
+          <li
             key={item.id}
-            className={activeSection === item.id ? 'active' : ''}
+            className={location.pathname.includes(item.id) ? 'active' : ''} // Verifica se a rota atual inclui o ID
           >
-            {item.label}
+            <Link to={`/${item.id}`}>{item.label}</Link>
           </li>
         ))}
       </ul>
