@@ -4,10 +4,10 @@ import './styles.css';
 const Sidebar = () => {
   const location = useLocation();
   const menuItems = [
-    { id: 'visao_geral', label: 'Visão Geral' },
+    // { id: 'visao_geral', label: 'Visão Geral' },
     { id: 'registration', label: 'Registrar' },
-    { id: 'orcamentos', label: 'Orçamentos' },
-    { id: 'edital', label: 'Editais' }
+    // { id: 'orcamentos', label: 'Orçamentos' },
+    // { id: 'edital', label: 'Editais' }
   ];
 
   return (
