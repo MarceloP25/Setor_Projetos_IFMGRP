@@ -64,3 +64,12 @@ export const salvarAluno = async (nome, cpf, email, modalidadeEnsino, curso, fil
 };
 export { db };
 
+
+
+// REACT_APP_API_KEY=AIzaSyC7JZenvTKVMg2EWBJFirdNZhfm6ep_bVQ
+// REACT_APP_AUTH_DOMAIN=setor-projetos.firebaseapp.com
+// REACT_APP_PROJECT_ID=setor-projetos
+// REACT_APP_STORAGE_BUCKET=setor-projetos.firebasestorage.app
+// REACT_APP_MESSAGING_SENDER_ID=400221572503
+// REACT_APP_APP_ID=1:400221572503:web:a360e29fa6cae93403c8d2
+// REACT_APP_MEASUREMENT_ID=G-6HB8T6WLXD
