@@ -4,7 +4,8 @@ import { FormData } from '../../types/registration';
 import './styles.css';
 import Header from '../../components/Header';
 import { Edital } from '../../types/Edital';
-import { getDocs } from 'firebase/firestore';
+import { getDocs, addDoc, collection } from 'firebase/firestore';
+import { db } from '../../service/firebaseUtil';
 
 const Registration: React.FC = () => {
   const fieldLabels: Record<keyof FormData, string> = {
@@ -92,11 +93,27 @@ const Registration: React.FC = () => {
   ]
 };
 
-  const { values, errors, loading, handleChange, handleSubmit } = formConfig;
+  const { values, errors, loading, handleChange } = formConfig;
     const [editais, setEditais] = useState<Edital[]>([]);
   const [loadingEditais, setLoadingEditais] = useState(false);
 
+const handleSubmit = async () => {
+  try {
+    const aluno = {
+      nome: values.nome,
+      cpf: values.cpf,
+      email: values.email,
+      modalidadeEnsino: values.modalidadeEnsino,
+      curso: values.curso,
+      dataCadastro: new Date()
+    };
 
+    await addDoc(collection(db, "alunos"), aluno);
+    alert('Aluno cadastrado com sucesso!');
+  } catch (error) {
+    alert('Erro ao cadastrar aluno: ' + error.message);
+  }
+};
 
     const getLabel = (field: keyof FormData): string => {
     if (field === 'bolsa') return fieldLabels[field];
