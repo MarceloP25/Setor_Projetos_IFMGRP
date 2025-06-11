@@ -1,1 +1,1 @@
-# Setor_Projetos_IFSMGRP
+# Setor_Projetos_IFMGRP
