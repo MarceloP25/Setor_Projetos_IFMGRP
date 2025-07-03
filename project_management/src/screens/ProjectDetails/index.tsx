@@ -55,7 +55,7 @@ const ProjectDisplay: React.FC = () => {
                 const projectData = {
                     ...docSnap.data(),
                     id: docSnap.id
-                } as ProjectData;
+                } as unknown as ProjectData;
                 
                 setProject(projectData);
                 setLoading(false);
