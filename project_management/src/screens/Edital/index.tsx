@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase/firebaseUtil';
 import { doc, setDoc, collection, getDocs, deleteDoc } from 'firebase/firestore';
+import { FirebaseError } from 'firebase/app';
 import './styles.css';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
 
 interface Edital {
-    id?: string;
+    id: string;
     nome: string;
 }
 
@@ -35,7 +36,7 @@ const EditalRegistration: React.FC = () => {
             })) as Edital[];
             setEditais(editaisLista);
         } catch (erro) {
-            alert('Erro ao carregar editais: ' + erro.message);
+            alert('Erro ao carregar editais: ');
         }
     };
 
@@ -58,11 +59,8 @@ const EditalRegistration: React.FC = () => {
             carregarEditais();
             alert('Edital cadastrado com sucesso!');
         } catch (erro) {
-            if ((erro as firebase.FirebaseError).code === 'already-exists') {
-                alert('Já existe um edital com este nome!');
-            } else {
-                alert('Erro ao cadastrar edital: ' + erro.message);
-            }
+                console.log('Erro ao cadastrar edital');
+            
         }
     };
 
@@ -73,7 +71,7 @@ const EditalRegistration: React.FC = () => {
                 carregarEditais();
                 alert('Edital excluído com sucesso!');
             } catch (erro) {
-                alert('Erro ao excluir edital: ' + erro.message);
+                alert('Erro ao excluir edital: ');
             }
         }
     };
