@@ -40,8 +40,15 @@ const Registration: React.FC = () => {
     email: '',
     senha: ''
   });
+  type ModalidadeEnsino = 
+    | 'graduacao'
+    | 'tecnico_integrado'
+    | 'tecnico_concomitante_subsequente'
+    | 'tecnico_subsequente_ead'
+    | 'pos_graduacao_lato_sensu'
+    | 'pos_graduacao_stricto_sensu';
 
-  const CURSO_OPTIONS = {
+ const CURSO_OPTIONS: Record<ModalidadeEnsino, string[]> = {
   graduacao: [
     'Agronomia',
     'Administração',
@@ -111,7 +118,7 @@ const handleSubmit = async () => {
     await addDoc(collection(db, "alunos"), aluno);
     alert('Aluno cadastrado com sucesso!');
   } catch (error) {
-    alert('Erro ao cadastrar aluno: ' + error.message);
+    alert('Erro ao cadastrar aluno: ');
   }
 };
 
@@ -149,7 +156,7 @@ const handleSubmit = async () => {
       })) as Edital[];
       setEditais(editaisLista);
     } catch (erro) {
-      alert('Erro ao carregar editais: ' + erro.message);
+      alert('Erro ao carregar editais: ');
     } finally {
       setLoadingEditais(false);
     }
@@ -199,12 +206,13 @@ const handleSubmit = async () => {
                       value={values.curso}
                       onChange={(e) => handleChange(field, e.target.value)}
                       className={`form-control ${errors[field] ? 'error' : ''}`}
-                      disabled={!values.modalidadeEnsino || !CURSO_OPTIONS[values.modalidadeEnsino]}
+                      disabled={!values.modalidadeEnsino}
+                      // disabled={!values.modalidadeEnsino || !CURSO_OPTIONS[values.modalidadeEnsino]}
                     >
                       <option value="">Selecione um curso</option>
-                      {values.modalidadeEnsino && CURSO_OPTIONS[values.modalidadeEnsino] && CURSO_OPTIONS[values.modalidadeEnsino].map(curso => (
+                      {/* {values.modalidadeEnsino && CURSO_OPTIONS[values.modalidadeEnsino] && CURSO_OPTIONS[values.modalidadeEnsino].map(curso => (
                         <option key={curso} value={curso}>{curso}</option>
-                      ))}
+                      ))} */}
                     </select>
                   ) : (
                     <input
@@ -224,18 +232,19 @@ const handleSubmit = async () => {
         <div className="bolsa-section">
           <h3 className="form-title">Dados da Bolsa</h3>
           {(Object.keys(values.bolsa) as Array<keyof FormData['bolsa']>).map(field => (
-            <div key={field} className={`form-group ${errors['bolsa']?.[field] ? 'error' : ''}`}>
+            <div key={field} className={`form-group ${errors['bolsa']?.[0] ? 'error' : ''}`}>
               <label className="form-label">{getNestedLabel(field)}</label>
               <input
                 type="text"
                 value={values.bolsa[field]}
                 className="form-control"
-                onChange={(e) => handleChange('bolsa', { ...values.bolsa, [field]: e.target.value })}
+                // onChange={(e) => handleChange('bolsa', { ...values.bolsa, [field]: e.target.value })}
+                onChange={(e) => handleChange('bolsa', '')}
                 placeholder={getNestedLabel(field)}
               />
-              {errors['bolsa']?.[field] && (
+              {/* {errors['bolsa']?.[field] && (
                 <span className="error-message">{errors['bolsa'][field]}</span>
-              )}
+              )} */}
             </div>
           ))}
         </div>
